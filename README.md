@@ -35,27 +35,33 @@ inject.mjs  连接 127.0.0.1:9342 的 CDP
 
 ## 快速开始（Windows）
 
-前置：Node.js 18+、WorkBuddy 桌面端。
+前置：Node.js 18+（或用 WorkBuddy 内置 node）、WorkBuddy 桌面端。
 
-1. 下载本仓库，解压到任意目录（路径别含空格）
-2. 双击 `start-skinned.bat`
-3. 等约 20 秒，界面变成云雾配色
+**推荐**：把 `launch-skinned.vbs` 发一个快捷方式到桌面，以后都从它启动。
 
-之后每次启动都走 `start-skinned.bat`（可以发快捷方式到桌面）。
+1. 右键 `launch-skinned.vbs` → 发送到 → 桌面快捷方式
+2. 双击桌面快捷方式
+3. 脚本先拉起隐藏守护，再开 WorkBuddy；约 20 秒后界面变云雾配色
 
-若已经处于登录状态但重启了 WorkBuddy，双击 `apply-now.bat` 即可补上，不用重启应用。
+`launch-skinned.vbs` 自动定位脚本目录与 Node/WorkBuddy 路径，仓库可放任意位置。守护独立于脚本存活：WorkBuddy 重启、切换任务、新开窗口后皮肤都会自动补上，不用再手动补注入。
 
-**还原**：双击 `restore.bat`，或直接关掉 WorkBuddy 正常打开。
+**其它入口**：
+- `start-skinned.bat`：关掉并重启 WorkBuddy + 注入（会重启一次，约 40 秒）
+- `apply-now.bat`：已登录状态下给运行中的实例补注入，不重启
+- 开机自启：把 `launch-skinned.vbs` 的快捷方式放进「启动」文件夹
+
+**还原**：双击 `restore.bat`，或直接从原始快捷方式打开 WorkBuddy。
 
 ## 目录
 
 ```
-├─ theme.css          全部样式（颜色、字体、挂件、表情切换）
-├─ inject.mjs         注入器 + 守护进程
-├─ audit.mjs          注入后抓 DOM 快照与截图，用于排错
-├─ start-skinned.bat  带调试端口启动并注入
-├─ apply-now.bat      给运行中的实例补注入
-├─ restore.bat        还原官方外观
+├─ theme.css            全部样式（颜色、字体、挂件、表情切换）
+├─ inject.mjs           注入器 + 守护进程（事件驱动，低开销）
+├─ launch-skinned.vbs   推荐入口：先起守护再开 WorkBuddy
+├─ audit.mjs            注入后抓 DOM 快照与截图，用于排错
+├─ start-skinned.bat    重启 WorkBuddy 并注入
+├─ apply-now.bat        给运行中的实例补注入
+├─ restore.bat          还原官方外观
 └─ assets/
    ├─ portrait-corner.png  对话区右侧的半透龙娘底纹
    ├─ ava-me.png           助手头像
@@ -80,7 +86,7 @@ inject.mjs  连接 127.0.0.1:9342 的 CDP
 
 ## 已知限制
 
-- **重启失效**：注入在内存里。想让外观常驻，需要一个守护进程 + 开机自启（可自行加计划任务），或改 `app.asar`（不推荐：破坏签名、升级即失效）
+- **重启失效**：注入在内存里。`launch-skinned.vbs` 已带守护，从它启动即可自动恢复；若想开机常驻，把它的快捷方式放进「启动」文件夹。改 `app.asar` 不推荐（破坏签名、升级即失效）
 - **依赖调试端口**：必须在启动时带上 `WORKBUDDY_REMOTE_DEBUGGING_PORT`
 - **类名会变**：WorkBuddy 升级后 UI 类名可能调整，届时需要补选择器
 - **只适配浅色**：请把 设置 → 外观 切到「浅色」，深色模式下会打架

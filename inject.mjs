@@ -43,8 +43,14 @@ const EXPR = `(() => {
   const ID='byakuru-skin', CSS=${JSON.stringify(CSS)};
   const head=document.head||document.documentElement;
   let el=document.getElementById(ID);
+  // 已注入且维护脚本为最新版：直接返回，跳过全部重解析/DOM 维护
+  if(el && el.dataset.ready==='1' && el.textContent.length===CSS.length) {
+    var _m=document.getElementById('byakuru-mascot');
+    if(_m && _m.dataset.m==='v5') return CSS.length;
+  }
   if(!el){el=document.createElement('style');el.id=ID;}
   if(el.textContent.length!==CSS.length) el.textContent=CSS;
+  el.dataset.ready='1';
   head.appendChild(el);
   try{
     const k='__byakuruSheet';
@@ -100,48 +106,64 @@ const EXPR = `(() => {
       });
       scheduleIdle();
     }
-  try {
-    var UIMG = '__ASSET__/ava-user.png';
-    var applyBranding = function () {
-      document.querySelectorAll('.user-menu-trigger-avatar img').forEach(function (im) {
-        if (im.getAttribute('src') !== UIMG) im.setAttribute('src', UIMG);
-      });
-    };
-    applyBranding();
-    if (!window.__byakuruBrandObs) {
-      var pending = false;
-      window.__byakuruBrandObs = new MutationObserver(function () {
-        if (pending) return;
-        pending = true;
-        requestAnimationFrame(function () { pending = false; try { applyBranding(); } catch (e) {} });
-      });
-      window.__byakuruBrandObs.observe(document.body, { childList: true, subtree: true });
-    }
-  } catch (e) {}
-    var place = function () {
-      // 首页和对话页的输入框可能同时挂在 DOM 上，取屏幕最靠下、且可见的那个
-      var cands = document.querySelectorAll('.cr-input-container');
-      var c = null, bestBottom = -1;
-      for (var ci = 0; ci < cands.length; ci++) {
-        var rr = cands[ci].getBoundingClientRect();
-        if (rr.width > 0 && rr.height > 0 && rr.bottom > bestBottom) { bestBottom = rr.bottom; c = cands[ci]; }
+    if (M.dataset.m !== 'v5') {
+      M.dataset.m = 'v5';
+      var UIMG = '__ASSET__/ava-user.png';
+      var applyBranding = function () {
+        var imgs = document.querySelectorAll('.user-menu-trigger-avatar img');
+        for (var i = 0; i < imgs.length; i++) {
+          if (imgs[i].getAttribute('src') !== UIMG) imgs[i].setAttribute('src', UIMG);
+        }
+      };
+      applyBranding();
+
+      // 统一一次布局计算：头像替换 + 小龙定位合并到一个 rAF，避免多次强制同步布局
+      var rectCache = null;
+      var relayout = function () {
+        var c = null, bestBottom = -1, cr, cl;
+        var cands = document.querySelectorAll('.cr-input-container');
+        for (var ci = 0; ci < cands.length; ci++) {
+          cr = cands[ci].getBoundingClientRect();
+          if (cr.width > 0 && cr.height > 0 && cr.bottom > bestBottom) { bestBottom = cr.bottom; c = cands[ci]; }
+        }
+        if (c) {
+          var r = c.getBoundingClientRect();
+          cl = Math.round(r.right - 98);
+          var ct = Math.round(r.top - 100);
+          if (r.top < window.innerHeight * 0.35) ct = Math.round(r.bottom - 46);
+          rectCache = [cl, ct];
+        }
+        try { applyBranding(); } catch (e) {}
+        if (rectCache) {
+          if (M.style.left !== rectCache[0] + 'px') M.style.left = rectCache[0] + 'px';
+          if (M.style.top !== rectCache[1] + 'px') M.style.top = rectCache[1] + 'px';
+        }
+      };
+
+      // rAF 合帧：一个刷新周期内多次触发只算一次
+      var raf = 0;
+      var schedule = function () {
+        if (raf) return;
+        raf = requestAnimationFrame(function () { raf = 0; try { relayout(); } catch (e) {} });
+      };
+      window.__byakuruPlace = schedule;
+
+      // 事件驱动：DOM 结构变化 / 窗口尺寸变化时才重排。去掉 2.5s 无条件定时器。
+      if (!window.__byakuruBrandObs) {
+        var pending = false;
+        window.__byakuruBrandObs = new MutationObserver(function () {
+          if (pending) return;
+          pending = true;
+          schedule();
+          setTimeout(function () { pending = false; }, 120); // 120ms 内合帧
+        });
+        window.__byakuruBrandObs.observe(document.body, { childList: true, subtree: true });
       }
-      if (!c) return;
-      var r = c.getBoundingClientRect();
-      var left = Math.round(r.right - 98);
-      var top = Math.round(r.top - 100);
-      // 上方没空间（欢迎页输入框居中）时，改扒下沿，保持"贴着输入框"这一关系
-      if (r.top < window.innerHeight * 0.35) {
-        top = Math.round(r.bottom - 46);
+      if (!window.__byakuruResize) {
+        window.__byakuruResize = true;
+        window.addEventListener('resize', schedule);
       }
-      if (M.style.left !== left + 'px') M.style.left = left + 'px';
-      if (M.style.top !== top + 'px') M.style.top = top + 'px';
-    };
-    place();
-    window.__byakuruPlace = place;
-    if (!window.__byakuruTimer) {
-      window.__byakuruTimer = setInterval(function () { try { window.__byakuruPlace(); } catch (e) {} }, 600);
-      window.addEventListener('resize', function () { try { window.__byakuruPlace(); } catch (e) {} });
+      schedule();
     }
   } catch (e) {}
   return CSS.length;
@@ -150,6 +172,11 @@ const EXPR = `(() => {
 async function targets() {
   const r = await fetch(`http://127.0.0.1:${PORT}/json/list`, { signal: AbortSignal.timeout(2500) });
   return r.json();
+}
+
+/** 守护模式：吞掉瞬时错误（重启时端口会短暂关闭），永不退出 */
+async function safeInjectAll() {
+  try { return await injectAll(); } catch (e) { return []; }
 }
 
 /** 给所有窗口注入；返回 [{title, ok}] */
@@ -177,12 +204,15 @@ async function injectAll() {
 async function main() {
   log(`start  port=${PORT} once=${once} css=${CSS.length}`);
 
-  for (let i = 0; i < 5; i++) {
-    try { const t = await targets(); if (t.length) break; } catch { /* wait */ }
-    await sleep(1000);
+  if (!once) {
+    // 守护模式先等端口，最多等 15 轮后仍继续轮询（WorkBuddy 可能暂时没开）
+    for (let i = 0; i < 15; i++) {
+      try { const t = await targets(); if (t.length) break; } catch { /* wait */ }
+      await sleep(1000);
+    }
   }
 
-  const first = await injectAll();
+  const first = once ? await injectAll() : await safeInjectAll();
   if (first.length) {
     for (const d of first) log(`ok ${d.len}  ${d.title}  ${d.url}`);
   } else {
@@ -195,13 +225,21 @@ async function main() {
 
   let lastCount = -1;
   setInterval(async () => {
-    try {
-      const r = await injectAll();
-      if (r.length !== lastCount) { log(`windows=${r.length}`); lastCount = r.length; }
-    } catch { /* port closed, retry */ }
-  }, 8000);
+    const r = await safeInjectAll();
+    if (r.length !== lastCount) { log(`windows=${r.length}`); lastCount = r.length; }
+  }, 12000);
 
   log('watching…');
 }
 
-main().catch((e) => { log('FATAL ' + e.message); process.exit(1); });
+main().catch((e) => {
+  log('ERR ' + e.message);
+  if (once) process.exit(1);
+  // 守护模式：即使初始化抛错也继续挂住，等待 WorkBuddy
+  if (TTL > 0) setTimeout(() => process.exit(0), TTL * 60000);
+  let last = -1;
+  setInterval(async () => {
+    const r = await safeInjectAll();
+    if (r.length !== last) { log(`windows=${r.length}`); last = r.length; }
+  }, 12000);
+});
