@@ -1,0 +1,321 @@
+/* =========================================================
+   白龍 · 雲瀾 —— WorkBuddy 皮肤 v6「白霧」
+   素白 / 雾蓝灰 / 流动雾气
+   ========================================================= */
+
+/* ---------- 1. 设计变量 ---------- */
+html, body, #root, :root {
+  --cb-bg: #FBFCFD !important;
+  --cb-bg-secondary: #F2F6F9 !important;
+  --cb-bg-tertiary: #E7EEF3 !important;
+  --cb-bg-card: #FFFFFF !important;
+  --cb-bg-elevated: #FFFFFF !important;
+  --cb-bg-surface: #FFFFFF !important;
+  --cb-bg-surface-hover: #F1F6F9 !important;
+  --cb-bg-surface-active: #E6EEF4 !important;
+  --cb-bg-primary: rgba(92,126,146,.08) !important;
+  --cb-bg-primary-hover: rgba(92,126,146,.14) !important;
+  --cb-bg-primary-active: rgba(92,126,146,.20) !important;
+  --cb-bg-overlay: rgba(251,252,253,.96) !important;
+
+  --cb-border: #E1EAEF !important;
+  --cb-border-secondary: #EDF3F6 !important;
+  --cb-border-color: rgba(92,126,146,.15) !important;
+  --cb-border-subtle: rgba(92,126,146,.07) !important;
+  --cb-border-strong: rgba(92,126,146,.24) !important;
+
+  --cb-text-primary: #1F2A31 !important;
+  --cb-text-secondary: #55636D !important;
+  --cb-text-muted: #8695A0 !important;
+  --cb-text-quaternary: #A8B6C0 !important;
+  --cb-text-link: #4E7389 !important;
+  --cb-text-link-hover: #3D5F73 !important;
+  --cb-text-highlight: #4E7389 !important;
+
+  --cb-accent: #5C7E92 !important;
+  --cb-accent-color: #5C7E92 !important;
+  --cb-accent-hover: #4A6A7C !important;
+
+  --cb-sidebar-bg: #F7FAFC !important;
+  --wb-sidebar-bg: #F7FAFC !important;
+  --cb-main-area-background: #FFFFFF !important;
+  --cb-panel-bg-primary: #FFFFFF !important;
+  --cb-input-background: #FFFFFF !important;
+  --cb-vscode-editor-background: #FFFFFF !important;
+  --cb-vscode-sideBar-background: #F4F8FA !important;
+  --cb-vscode-list-hoverBackground: #ECF3F8 !important;
+
+  --cb-assistant-bubble-bg: #FFFFFF !important;
+  --cb-assistant-bubble-color: #1F2A31 !important;
+}
+
+/* ---------- 2. 基础层 ---------- */
+html, body { background: #FBFCFD !important; color: #1F2A31 !important; }
+
+/* ---------- 3. 侧栏：素白，只有一丝雾 ---------- */
+.conversation-list {
+  background:
+    radial-gradient(300px 220px at 20% 0%, rgba(255,255,255,.95), transparent 70%),
+    linear-gradient(180deg, #FCFDFE 0%, #F1F5F8 100%) !important;
+  border-right: 1px solid #E4ECF1 !important;
+  box-shadow: inset -1px 0 0 rgba(120,150,170,.10) !important;
+}
+.conversation-list-tab-button {
+  background: rgba(255,255,255,.85) !important;
+  border: 1px solid #E3EBF0 !important;
+  color: #3E4D57 !important;
+}
+.conversation-list-tab-button-box { background: transparent !important; }
+.conversation-section-label { background: transparent !important; color: #8D9BA5 !important; }
+[class*="_header_"] { background: transparent !important; }
+
+[class*="conversation-item"] { border-radius: 9px !important; }
+[class*="conversation-item"]:hover { background: rgba(92,126,146,.08) !important; }
+[class*="conversation-item"][class*="active"],
+[class*="conversation-item"].is-active { background: #FFFFFF !important; }
+
+.workbuddy-window-controls { background: transparent !important; }
+
+/* ---------- 4. 主区域：白龙 + 流动雾气 ---------- */
+.layout-window-frame__body { background: #FBFCFD !important; }
+
+.conversation-shell {
+  background-color: #FBFCFD !important;
+  background-image:
+    url("__ASSET__/portrait-corner.png"),
+    radial-gradient(58% 42% at 18% 22%, rgba(255,255,255,.92) 0%, rgba(255,255,255,0) 68%),
+    radial-gradient(66% 48% at 82% 62%, rgba(226,236,243,.66) 0%, rgba(226,236,243,0) 70%),
+    radial-gradient(52% 40% at 48% 98%, rgba(255,255,255,.96) 0%, rgba(255,255,255,0) 72%),
+    radial-gradient(40% 34% at 70% 8%, rgba(232,240,246,.55) 0%, rgba(232,240,246,0) 70%) !important;
+  background-repeat: no-repeat !important;
+  background-size: 390px auto, 170% 170%, 170% 170%, 170% 170%, 170% 170% !important;
+  background-position: 100% 88%, 0% 0%, 100% 100%, 50% 100%, 70% 0% !important;
+  animation: byakuru-mist 52s ease-in-out infinite alternate !important;
+}
+
+@keyframes byakuru-mist {
+  0%   { background-position: 100% 88%,   0% 0%,   100% 100%,  50% 100%,  70% 0%; }
+  50%  { background-position: 100% 88%,  22% 16%,   78% 62%,   44% 88%,   58% 12%; }
+  100% { background-position: 100% 88%,  34% 28%,   62% 44%,   56% 76%,   48% 18%; }
+}
+
+/* ---------- 5. 输入区：磨砂白 ---------- */
+.cr-input-container {
+  background: rgba(255,255,255,.92) !important;
+  border: 1px solid #DEE8EE !important;
+  border-radius: 18px !important;
+  box-shadow: 0 2px 12px rgba(30,60,80,.05), 0 26px 50px -38px rgba(30,60,80,.5) !important;
+  backdrop-filter: blur(10px) saturate(1.05) !important;
+}
+.cr-input-container:focus-within {
+  border-color: rgba(92,126,146,.45) !important;
+  box-shadow: 0 0 0 3px rgba(92,126,146,.09), 0 26px 50px -38px rgba(30,60,80,.5) !important;
+}
+.cr-input-toolbar__right { background: transparent !important; }
+
+/* ---------- 6. 气泡 / 块 ---------- */
+.cr-self-bubble {
+  background: rgba(238,244,248,.92) !important;
+  color: #21303A !important;
+  border: 1px solid #DEE8EE !important;
+  border-radius: 16px !important;
+  backdrop-filter: blur(6px) !important;
+}
+.cr-code-like-box, .cr-table-block__scroller {
+  background: rgba(255,255,255,.86) !important;
+  border: 1px solid #E4EDF2 !important;
+  border-radius: 12px !important;
+}
+.cr-code-like-box__header {
+  background: rgba(243,248,251,.9) !important;
+  border-bottom: 1px solid #E4EDF2 !important;
+  color: #4A5D69 !important;
+}
+
+thead, th { background: #F3F8FB !important; color: #384A55 !important; }
+tr:nth-child(even) td { background: rgba(250,253,254,.7) !important; }
+code, kbd, samp, pre, .cr-inline-code { background: #F2F7FA !important; color: #2C4653 !important; }
+blockquote { background: rgba(250,253,254,.8) !important; border-left: 3px solid #B9CEDC !important; }
+
+/* ---------- 7. 按钮 / 快捷卡 / 头像 / 媒体卡 ---------- */
+.quick-actions__item {
+  background: rgba(255,255,255,.78) !important;
+  border: 1px solid #E3EBF0 !important;
+  border-radius: 12px !important;
+  transition: .2s !important;
+  backdrop-filter: blur(6px) !important;
+}
+.quick-actions__item:hover {
+  background: #FFFFFF !important;
+  border-color: #C6D8E4 !important;
+  transform: translateY(-1px);
+}
+.wb-button--secondary {
+  background: rgba(245,249,251,.9) !important;
+  border: 1px solid #E1EAEF !important;
+  color: #3E4D57 !important;
+}
+.wb-button--secondary:hover { background: #EDF3F7 !important; }
+.wb-button--primary {
+  background: linear-gradient(180deg, #6C8FA4, #53768A) !important;
+  border-color: #4A6A7C !important;
+  color: #fff !important;
+}
+.wb-avatar { background: #ECF3F8 !important; }
+.cr-media-generation__card {
+  background: rgba(245,249,252,.9) !important; border: 1px solid #E4EDF2 !important; border-radius: 12px !important;
+}
+.cr-media-generation__preview-button { background: rgba(255,255,255,.8) !important; }
+
+/* ---------- 8. 泛用层 ---------- */
+[class*="modal"], [class*="dialog"], [class*="popover"], [class*="popup"],
+[class*="dropdown"], [class*="drawer"], [class*="tooltip"] { --cb-bg: #FFFFFF !important; }
+[class*="modal"] [class*="body"], [class*="dialog"] [class*="body"] { background: #FFFFFF !important; }
+[class*="menu-list"], [class*="dropdown-menu"], [class*="context-menu"] {
+  background: rgba(255,255,255,.97) !important;
+  border: 1px solid #E1EAEF !important;
+  box-shadow: 0 20px 44px -34px rgba(30,60,80,.5) !important;
+  backdrop-filter: blur(12px) !important;
+}
+[class*="settings"] { background-color: transparent !important; }
+[class*="settings"][class*="nav"], [class*="settings"][class*="sidebar"] {
+  background: #F5F9FB !important;
+  border-right: 1px solid #E4ECF1 !important;
+}
+[class*="result-panel"], [class*="right-panel"], [class*="side-panel"] {
+  background: rgba(251,253,254,.9) !important;
+  border-left: 1px solid #E7EFF4 !important;
+}
+
+/* ---------- 9. 细节 ---------- */
+::selection { background: rgba(92,126,146,.18) !important; color: #1F2A31 !important; }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-thumb {
+  background: #D2DFE8 !important; border-radius: 99px;
+  border: 2px solid transparent; background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: #BCCFDC !important; background-clip: padding-box; }
+::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent !important; }
+
+.workbuddy-topbar,
+[class*="titlebar"] {
+  background: rgba(252,253,254,.9) !important;
+  border-bottom: 1px solid #E7EFF4 !important;
+  backdrop-filter: blur(10px) !important;
+}
+.workbuddy-topbar-title { color: #1F2A31 !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .conversation-shell { animation: none !important; }
+}
+
+/* ---------- 10. 扒在输入框上的白龙（Q版多表情） ---------- */
+.conversation-input__growth-buddy,
+.wb-growth-buddy { display: none !important; }
+
+#byakuru-mascot {
+  position: fixed;
+  left: 0; top: 0;
+  width: 106px;
+  height: 106px;
+  z-index: 80;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+}
+
+#byakuru-mascot .inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 100%;
+  animation: byakuru-bob 4.6s ease-in-out infinite;
+  filter: drop-shadow(0 9px 14px rgba(40,70,90,.16));
+  transition: transform .34s cubic-bezier(.34,1.56,.64,1);
+  will-change: transform;
+}
+
+/* 六张表情叠放，切的是透明度，不会出现加载白闪 */
+#byakuru-mascot .face {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity .18s ease;
+  pointer-events: none;
+  will-change: opacity;
+}
+#byakuru-mascot .face.on { opacity: 1; }
+
+/* 悬停：往上窜一下 */
+#byakuru-mascot:hover .inner { transform: translateY(-7px) scale(1.06) rotate(-3deg); }
+
+/* 害羞：左右小抖 */
+#byakuru-mascot.shy .inner { animation: byakuru-shy .6s ease-in-out; }
+@keyframes byakuru-shy {
+  0%, 100% { transform: translateY(-7px) scale(1.06) rotate(-3deg); }
+  25%      { transform: translateY(-11px) scale(1.08) rotate(-7deg); }
+  65%      { transform: translateY(-7px) scale(1.05) rotate(3deg); }
+}
+
+/* 点击：弹一下 */
+#byakuru-mascot.pop .inner { animation: byakuru-pop .6s cubic-bezier(.34,1.56,.64,1); }
+@keyframes byakuru-pop {
+  0%   { transform: scale(1); }
+  35%  { transform: scale(1.18) rotate(2deg); }
+  70%  { transform: scale(.95) rotate(-1deg); }
+  100% { transform: scale(1); }
+}
+
+@keyframes byakuru-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #byakuru-mascot .inner, #byakuru-mascot .face { animation: none !important; transition: none !important; }
+}
+
+/* ---------- 11. 头像与署名（纯 CSS，不动 React 节点） ---------- */
+.user-menu-trigger-avatar img,
+.user-menu-trigger-avatar .wb-avatar__img { object-fit: cover !important; }
+.user-menu-trigger-avatar .wb-avatar {
+  background: #EEF4F8 !important;
+  box-shadow: 0 0 0 1px rgba(150,175,190,.35) !important;
+}
+
+/* 用户名：藏掉原文，用伪元素显示 */
+.user-menu-trigger-name { font-size: 0 !important; }
+.user-menu-trigger-name::after {
+  content: "rauki";
+  font-size: 12px;
+  letter-spacing: .05em;
+  color: #3E4D57;
+}
+
+/* 助手署名：藏掉原文，用伪元素显示 */
+.cr-agent__name { font-size: 0 !important; }
+.cr-agent__name::after {
+  content: "雪璃";
+  font-size: 13px;
+  font-family: "Songti SC", "Source Han Serif SC", SimSun, serif;
+  letter-spacing: .1em;
+  color: #2B3A42;
+}
+
+/* 助手头像：藏掉原生 svg，用背景图顶上 */
+.cr-agent__logo {
+  position: relative !important;
+  width: 24px !important;
+  height: 24px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  flex: none !important;
+  background-image: url("__ASSET__/ava-me.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  box-shadow: 0 0 0 1px rgba(150,175,190,.35) !important;
+}
+.cr-agent__logo svg { display: none !important; }
