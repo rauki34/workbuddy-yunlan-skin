@@ -119,24 +119,29 @@ const EXPR = `(() => {
     }
   } catch (e) {}
     var place = function () {
-      var c = document.querySelector('.cr-input-container');
+      // 首页和对话页的输入框可能同时挂在 DOM 上，取屏幕最靠下、且可见的那个
+      var cands = document.querySelectorAll('.cr-input-container');
+      var c = null, bestBottom = -1;
+      for (var ci = 0; ci < cands.length; ci++) {
+        var rr = cands[ci].getBoundingClientRect();
+        if (rr.width > 0 && rr.height > 0 && rr.bottom > bestBottom) { bestBottom = rr.bottom; c = cands[ci]; }
+      }
       if (!c) return;
       var r = c.getBoundingClientRect();
       var left = Math.round(r.right - 98);
       var top = Math.round(r.top - 100);
-      // 输入框在屏幕上半部（欢迎页居中态）时，退到右下角，别吊在中间
-      if (top < window.innerHeight * 0.45) {
-        left = Math.round(window.innerWidth - 132);
-        top = Math.round(window.innerHeight - 168);
+      // 上方没空间（欢迎页输入框居中）时，改扒下沿，保持"贴着输入框"这一关系
+      if (r.top < window.innerHeight * 0.35) {
+        top = Math.round(r.bottom - 46);
       }
       if (M.style.left !== left + 'px') M.style.left = left + 'px';
       if (M.style.top !== top + 'px') M.style.top = top + 'px';
     };
     place();
-    if (!window.__byakuruPlace) {
-      window.__byakuruPlace = place;
-      window.addEventListener('resize', place);
-      setInterval(place, 700);
+    window.__byakuruPlace = place;
+    if (!window.__byakuruTimer) {
+      window.__byakuruTimer = setInterval(function () { try { window.__byakuruPlace(); } catch (e) {} }, 600);
+      window.addEventListener('resize', function () { try { window.__byakuruPlace(); } catch (e) {} });
     }
   } catch (e) {}
   return CSS.length;
