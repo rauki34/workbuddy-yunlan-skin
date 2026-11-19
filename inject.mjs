@@ -126,8 +126,8 @@ const EXPR = `(() => {
       var top = Math.round(r.top - 100);
       // 输入框在屏幕上半部（欢迎页居中态）时，退到右下角，别吊在中间
       if (top < window.innerHeight * 0.45) {
-        left = Math.round(window.innerWidth - 134);
-        top = Math.round(window.innerHeight - 210);
+        left = Math.round(window.innerWidth - 132);
+        top = Math.round(window.innerHeight - 168);
       }
       if (M.style.left !== left + 'px') M.style.left = left + 'px';
       if (M.style.top !== top + 'px') M.style.top = top + 'px';
