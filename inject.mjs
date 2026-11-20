@@ -46,7 +46,7 @@ const EXPR = `(() => {
   // 已注入且维护脚本为最新版：直接返回，跳过全部重解析/DOM 维护
   if(el && el.dataset.ready==='1' && el.textContent.length===CSS.length) {
     var _m=document.getElementById('byakuru-mascot');
-    if(_m && _m.dataset.m==='v5') return CSS.length;
+    if(_m && _m.dataset.m==='v7') return CSS.length;
   }
   if(!el){el=document.createElement('style');el.id=ID;}
   if(el.textContent.length!==CSS.length) el.textContent=CSS;
@@ -106,8 +106,8 @@ const EXPR = `(() => {
       });
       scheduleIdle();
     }
-    if (M.dataset.m !== 'v5') {
-      M.dataset.m = 'v5';
+    if (M.dataset.m !== 'v7') {
+      M.dataset.m = 'v7';
       var UIMG = '__ASSET__/ava-user.png';
       var applyBranding = function () {
         var imgs = document.querySelectorAll('.user-menu-trigger-avatar img');
@@ -117,27 +117,28 @@ const EXPR = `(() => {
       };
       applyBranding();
 
-      // 统一一次布局计算：头像替换 + 小龙定位合并到一个 rAF，避免多次强制同步布局
-      var rectCache = null;
+      // 一次 rAF 内算一次布局；无有效输入框时隐藏小龙，避免设置页/弹窗里跑到左上角
       var relayout = function () {
-        var c = null, bestBottom = -1, cr, cl;
+        var c = null, bestBottom = -1, cr;
         var cands = document.querySelectorAll('.cr-input-container');
         for (var ci = 0; ci < cands.length; ci++) {
           cr = cands[ci].getBoundingClientRect();
-          if (cr.width > 0 && cr.height > 0 && cr.bottom > bestBottom) { bestBottom = cr.bottom; c = cands[ci]; }
-        }
-        if (c) {
-          var r = c.getBoundingClientRect();
-          cl = Math.round(r.right - 98);
-          var ct = Math.round(r.top - 100);
-          if (r.top < window.innerHeight * 0.35) ct = Math.round(r.bottom - 46);
-          rectCache = [cl, ct];
+          var st = getComputedStyle(cands[ci]);
+          if (cr.width > 240 && cr.height > 20 && cr.bottom > bestBottom &&
+              st.visibility !== 'hidden' && st.display !== 'none' &&
+              cr.bottom > 0 && cr.top < window.innerHeight) {
+            bestBottom = cr.bottom; c = cands[ci];
+          }
         }
         try { applyBranding(); } catch (e) {}
-        if (rectCache) {
-          if (M.style.left !== rectCache[0] + 'px') M.style.left = rectCache[0] + 'px';
-          if (M.style.top !== rectCache[1] + 'px') M.style.top = rectCache[1] + 'px';
-        }
+        if (!c) { M.style.display = 'none'; return; }
+        M.style.display = '';
+        var r = c.getBoundingClientRect();
+        var cl = Math.round(r.right - 98);
+        var ct = Math.round(r.top - 100);
+        if (r.top < window.innerHeight * 0.35) ct = Math.round(r.bottom - 46);
+        if (M.style.left !== cl + 'px') M.style.left = cl + 'px';
+        if (M.style.top !== ct + 'px') M.style.top = ct + 'px';
       };
 
       // rAF 合帧：一个刷新周期内多次触发只算一次
@@ -162,6 +163,22 @@ const EXPR = `(() => {
       if (!window.__byakuruResize) {
         window.__byakuruResize = true;
         window.addEventListener('resize', schedule);
+      }
+      // 锚点尺寸变化 + 低频兜底：页面切换（设置/弹窗）时输入框换节点也不漏
+      try {
+        if (window.__byakuruRO) window.__byakuruRO.disconnect();
+        window.__byakuruRO = new ResizeObserver(schedule);
+        var anchor = document.querySelector('.cr-input-container');
+        if (anchor) window.__byakuruRO.observe(anchor);
+      } catch (e) {}
+      if (!window.__byakuruTick) {
+        window.__byakuruTick = setInterval(function () {
+          try {
+            var a = document.querySelector('.cr-input-container');
+            if (a && window.__byakuruRO) { window.__byakuruRO.disconnect(); window.__byakuruRO.observe(a); }
+          } catch (e) {}
+          schedule();
+        }, 1600);
       }
       schedule();
     }
